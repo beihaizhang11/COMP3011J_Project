@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button editBtn;
     ImageButton moreBtn;
     Button budgetAnalysisBtn;  // 添加成员变量
+    Button scanBtn;  // 添加扫描按钮变量声明
     //声明数据源
     List<AccountBean>mDatas;
     AccountAdapter adapter;
@@ -61,6 +62,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //设置适配器：加载每一行数据到列表当中
         adapter = new AccountAdapter(this, mDatas);
         todayLv.setAdapter(adapter);
+
+        scanBtn = findViewById(R.id.main_btn_scan);
+        scanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ScanActivity.class);
+                startActivity(intent) ;
+            }
+        });
     }
      /** 初始化自带的View的方法*/
     private void initView() {

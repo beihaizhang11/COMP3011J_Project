@@ -50,6 +50,19 @@
         android:drawableLeft="@mipmap/edit"
         android:gravity="center_vertical"/>
 
+    <Button
+        android:id="@+id/main_btn_scan"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@id/main_btn_edit"
+        android:layout_toLeftOf="@id/main_btn_edit"
+        android:background="@drawable/main_recordbtn_bg"
+        android:text="扫码记账"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:drawableLeft="@drawable/ic_scan"
+        android:gravity="center_vertical"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hui.tally">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <application
         android:name=".UniteApp"
         android:allowBackup="true"
@@ -10,25 +16,58 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MonthChartActivity"></activity>
-        <activity android:name=".SettingActivity" />
-        <activity android:name=".HistoryActivity" />
-        <activity android:name=".AboutActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".RecordActivity" />
-        <activity android:name=".MainActivity">
+        
+        <activity 
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity 
+            android:name=".ScanActivity"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".MonthChartActivity"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".SettingActivity"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".HistoryActivity"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".AboutActivity"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".SearchActivity"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".RecordActivity"
+            android:exported="false" />
+            
         <activity
             android:name=".BudgetManagerActivity"
             android:label="预算管理"
-            android:theme="@style/AppTheme"/>
-        <activity android:name=".BudgetAnalysisActivity" />
-        <activity android:name=".TypeAnalysisActivity" />
+            android:theme="@style/AppTheme"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".BudgetAnalysisActivity"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".TypeAnalysisActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
