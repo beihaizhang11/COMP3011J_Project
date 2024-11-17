@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -31,6 +33,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     ListView todayLv;  //展示今日收支情况的ListView
     ImageView searchIv;
@@ -38,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton moreBtn;
     Button budgetAnalysisBtn;  // 添加成员变量
     Button scanBtn;  // 添加扫描按钮变量声明
+    Button heatMapBtn;
     //声明数据源
     List<AccountBean>mDatas;
     AccountAdapter adapter;
@@ -53,6 +61,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        // 检查并请求位置权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        }
+        
         initTime();
         initView();
         preferences = getSharedPreferences("budget", Context.MODE_PRIVATE);
@@ -81,12 +98,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         budgetAnalysisBtn = findViewById(R.id.main_btn_budget_analysis);  // 初始化按钮
         warningTv = findViewById(R.id.main_tv_warning);
         suggestionTv = findViewById(R.id.main_tv_suggestion);
+        heatMapBtn = findViewById(R.id.main_btn_heatmap);
         checkBudgetWarning();
         checkSpendingSuggestion();
         editBtn.setOnClickListener(this);
         moreBtn.setOnClickListener(this);
         searchIv.setOnClickListener(this);
         budgetAnalysisBtn.setOnClickListener(this);  // 添加点击监听
+        heatMapBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HeatMapActivity.class);
+                startActivity(intent);
+            }
+        });
         setLVLongClickListener();
     }
     /** 设置ListView的长按事件*/
@@ -208,8 +233,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(it);
                 break;
             case R.id.main_btn_edit:
-                Intent it1 = new Intent(this, RecordActivity.class);  //跳界面
-                startActivity(it1);
+                Intent intent = new Intent(this, RecordActivity.class);
+                // 获取当前位置并传递给RecordActivity
+                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (location != null) {
+                        intent.putExtra("latitude", location.getLatitude());
+                        intent.putExtra("longitude", location.getLongitude());
+                    }
+                }
+                startActivity(intent);
                 break;
             case R.id.main_btn_more:
                 MoreDialog moreDialog = new MoreDialog(this);
@@ -217,16 +251,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 moreDialog.setDialogSize();
                 break;
             case R.id.item_mainlv_top_tv_budget:
-                Intent intent = new Intent(this, BudgetManagerActivity.class);
-                startActivity(intent);
+                Intent intent1 = new Intent(this, BudgetManagerActivity.class);
+                startActivity(intent1);
                 break;
             case R.id.item_mainlv_top_iv_hide:
                 // 切换TextView明文和密文
                 toggleShow();
                 break;
             case R.id.main_btn_budget_analysis:
-                Intent intent1 = new Intent(this, BudgetAnalysisActivity.class);
-                startActivity(intent1);
+                Intent intent2 = new Intent(this, BudgetAnalysisActivity.class);
+                startActivity(intent2);
                 break;
         }
         if (v == headerView) {

@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/main_top_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="70dp">
         <ImageView
             android:id="@+id/main_iv_search"
             android:layout_width="wrap_content"
@@ -15,7 +15,47 @@
             android:src="@mipmap/search"
             android:layout_alignParentRight="true"
             android:padding="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/main_btn_budget_analysis"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/main_recordbtn_bg"
+                android:text="Budget Management"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/main_tv_warning"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_marginBottom="3dp"
+                    android:textColor="#FF0000"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/main_tv_suggestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:textColor="#FF6B6B"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
     </RelativeLayout>
+
     <ListView
         android:id="@+id/main_lv"
         android:layout_width="match_parent"
@@ -63,42 +103,16 @@
         android:drawableLeft="@drawable/ic_scan"
         android:gravity="center_vertical"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="10dp">
+    <Button
+        android:id="@+id/main_btn_heatmap"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@id/main_btn_scan"
+        android:layout_toLeftOf="@id/main_btn_scan"
+        android:background="@drawable/main_recordbtn_bg"
+        android:text="消费热力图"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:gravity="center_vertical"/>
 
-        <Button
-            android:id="@+id/main_btn_budget_analysis"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:text="Budget Management"
-            android:background="@drawable/main_recordbtn_bg"
-            android:textColor="@color/white"
-            android:layout_marginRight="10dp"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-            
-            <TextView
-                android:id="@+id/main_tv_warning"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FF0000"
-                android:textSize="14sp"
-                android:layout_marginBottom="3dp"/>
-            
-            <TextView
-                android:id="@+id/main_tv_suggestion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FF6B6B"
-                android:textSize="14sp"/>
-        </LinearLayout>
-    </LinearLayout>
 </RelativeLayout>

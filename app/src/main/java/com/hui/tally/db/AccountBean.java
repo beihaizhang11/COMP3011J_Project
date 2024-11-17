@@ -11,6 +11,8 @@ public class AccountBean {
     int month;
     int day;
     int kind;   //类型  收入---1   支出---0
+    double latitude;   // 纬度
+    double longitude;  // 经度
 
     public int getId() {
         return id;
@@ -34,6 +36,14 @@ public class AccountBean {
 
     public void setsImageId(int sImageId) {
         this.sImageId = sImageId;
+    }
+
+    public void setSImageId(int sImageId) {
+        this.sImageId = sImageId;
+    }
+
+    public int getSImageId() {
+        return sImageId;
     }
 
     public String getBeizhu() {
@@ -90,6 +100,22 @@ public class AccountBean {
 
     public void setKind(int kind) {
         this.kind = kind;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public AccountBean() {

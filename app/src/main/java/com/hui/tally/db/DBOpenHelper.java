@@ -10,7 +10,7 @@ import com.hui.tally.R;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
     public DBOpenHelper(@Nullable Context context) {
-        super(context,"tally.db" , null, 1);
+        super(context,"tally.db" , null, 2);
     }
 
 //    创建数据库的方法，只有项目第一次运行时，会被调用
@@ -21,8 +21,18 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         db.execSQL(sql);
         insertType(db);
         //创建记账表
-        sql = "create table accounttb(id integer primary key autoincrement,typename varchar(10),sImageId integer,beizhu varchar(80),money float," +
-                "time varchar(60),year integer,month integer,day integer,kind integer)";
+        sql = "create table accounttb(id integer primary key autoincrement," +
+                "typename varchar(10)," +
+                "sImageId integer," +
+                "beizhu varchar(80)," +
+                "money float," +
+                "time varchar(60)," +
+                "year integer," +
+                "month integer," +
+                "day integer," +
+                "kind integer," +
+                "latitude double," +
+                "longitude double)";
         db.execSQL(sql);
         //新增预算类型表
         sql = "create table budgettb(id integer primary key autoincrement,typename varchar(10),money float,year integer,month integer)";
@@ -63,6 +73,28 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     // 数据库版本在更新时发生改变，会调用此方法
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        // 如果表不存在,创建预算表
+        String sql = "CREATE TABLE IF NOT EXISTS budgettb (" +
+                "id integer primary key autoincrement," +
+                "typename varchar(10)," +
+                "money float," +
+                "year integer," +
+                "month integer)";
+        db.execSQL(sql);
+        
+        // 如果accounttb表不存在或需要更新,添加经纬度字段
+        sql = "ALTER TABLE accounttb ADD COLUMN latitude double DEFAULT 0";
+        try {
+            db.execSQL(sql);
+        } catch (Exception e) {
+            // 字段可能已存在,忽略错误
+        }
+        
+        sql = "ALTER TABLE accounttb ADD COLUMN longitude double DEFAULT 0";
+        try {
+            db.execSQL(sql);
+        } catch (Exception e) {
+            // 字段可能已存在,忽略错误
+        }
     }
 }

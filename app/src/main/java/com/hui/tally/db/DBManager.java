@@ -52,6 +52,7 @@ public class DBManager {
     * 向记账表当中插入一条元素
     * */
     public static void insertItemToAccounttb(AccountBean bean){
+        Log.d("DBManager", "Saving location: " + bean.getLatitude() + ", " + bean.getLongitude());
         ContentValues values = new ContentValues();
         values.put("typename",bean.getTypename());
         values.put("sImageId",bean.getsImageId());
@@ -62,6 +63,8 @@ public class DBManager {
         values.put("month",bean.getMonth());
         values.put("day",bean.getDay());
         values.put("kind",bean.getKind());
+        values.put("latitude",bean.getLatitude());
+        values.put("longitude",bean.getLongitude());
         db.insert("accounttb",null,values);
     }
     /*
@@ -80,7 +83,11 @@ public class DBManager {
             int sImageId = cursor.getInt(cursor.getColumnIndex("sImageId"));
             int kind = cursor.getInt(cursor.getColumnIndex("kind"));
             float money = cursor.getFloat(cursor.getColumnIndex("money"));
+            double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
+            double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
             AccountBean accountBean = new AccountBean(id, typename, sImageId, beizhu, money, time, year, month, day, kind);
+            accountBean.setLatitude(latitude);
+            accountBean.setLongitude(longitude);
             list.add(accountBean);
         }
         return list;
@@ -93,7 +100,7 @@ public class DBManager {
         List<AccountBean>list = new ArrayList<>();
         String sql = "select * from accounttb where year=? and month=? order by id desc";
         Cursor cursor = db.rawQuery(sql, new String[]{year + "", month + ""});
-        //遍历符合要求的每一行数据
+        
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String typename = cursor.getString(cursor.getColumnIndex("typename"));
@@ -103,7 +110,11 @@ public class DBManager {
             int kind = cursor.getInt(cursor.getColumnIndex("kind"));
             float money = cursor.getFloat(cursor.getColumnIndex("money"));
             int day = cursor.getInt(cursor.getColumnIndex("day"));
+            double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
+            double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
             AccountBean accountBean = new AccountBean(id, typename, sImageId, beizhu, money, time, year, month, day, kind);
+            accountBean.setLatitude(latitude);
+            accountBean.setLongitude(longitude);
             list.add(accountBean);
         }
         return list;
@@ -338,7 +349,7 @@ public class DBManager {
         return list;
     }
 
-    // 获取某年某月某一类型的支出总金额
+    // 获取某年某月某一类的支出总金额
     public static float getSumMoneyOneMonthByType(int year, int month, String typename) {
         float total = 0.0f;
         String sql = "select sum(money) from accounttb where year=? and month=? and typename=?";
@@ -364,6 +375,51 @@ public class DBManager {
                 currentMonth = 12;
                 currentYear--;
             }
+        }
+        return list;
+    }
+
+    public static int getCountItemOneDay(int year, int month, int day, int kind) {
+        int count = 0;
+        String sql = "select count(*) from accounttb where year=? and month=? and day=? and kind=?";
+        Cursor cursor = db.rawQuery(sql, new String[]{year+"", month+"", day+"", kind+""});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        return count;
+    }
+
+    public static int getCountItemOneYear(int year, int kind) {
+        int count = 0;
+        String sql = "select count(*) from accounttb where year=? and kind=?";
+        Cursor cursor = db.rawQuery(sql, new String[]{year+"", kind+""});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        return count;
+    }
+
+    public static List<AccountBean> getAccountListOneYearFromAccounttb(int year) {
+        List<AccountBean> list = new ArrayList<>();
+        String sql = "select * from accounttb where year=? order by id desc";
+        Cursor cursor = db.rawQuery(sql, new String[]{year + ""});
+        
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
+            String typename = cursor.getString(cursor.getColumnIndex("typename"));
+            String beizhu = cursor.getString(cursor.getColumnIndex("beizhu"));
+            String time = cursor.getString(cursor.getColumnIndex("time"));
+            int sImageId = cursor.getInt(cursor.getColumnIndex("sImageId"));
+            int kind = cursor.getInt(cursor.getColumnIndex("kind"));
+            float money = cursor.getFloat(cursor.getColumnIndex("money"));
+            int month = cursor.getInt(cursor.getColumnIndex("month"));
+            int day = cursor.getInt(cursor.getColumnIndex("day"));
+            double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
+            double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
+            AccountBean accountBean = new AccountBean(id, typename, sImageId, beizhu, money, time, year, month, day, kind);
+            accountBean.setLatitude(latitude);
+            accountBean.setLongitude(longitude);
+            list.add(accountBean);
         }
         return list;
     }

@@ -15,12 +15,25 @@ import java.util.Date;
 import okhttp3.*;
 import org.json.JSONObject;
 import java.io.IOException;
+import android.location.Location;
+import android.location.LocationManager;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.content.Context;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import android.util.Log;
 
 public class ScanActivity extends AppCompatActivity {
     private static final String BASE_URL = "https://www.mxnzp.com/api/barcode/goods/details";
     private static final String APP_ID = "nrmef1l2tlflbknw";  // 替换成你申请的APP_ID
     private static final String APP_SECRET = "meIQIXYnGX7KaY49YE1cFjmsqqBaYhOi"; // 替换成你申请的APP_SECRET
     private OkHttpClient client;
+    private LocationClient locationClient;
+    private BDAbstractLocationListener locationListener;
+    private AccountBean bean;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +41,48 @@ public class ScanActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scan);
         client = new OkHttpClient();
         startScan();
+        
+        bean = new AccountBean();
+        
+        try {
+            LocationClient.setAgreePrivacy(true);
+            locationClient = new LocationClient(getApplicationContext());
+            LocationClientOption option = new LocationClientOption();
+            option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+            option.setCoorType("bd09ll");
+            option.setScanSpan(1000);
+            option.setOpenGps(true);
+            option.setLocationNotify(true);
+            option.setIgnoreKillProcess(false);
+            option.setIsNeedLocationDescribe(true);
+            option.setIsNeedAddress(true);
+            locationClient.setLocOption(option);
+            
+            locationListener = new BDAbstractLocationListener() {
+                @Override
+                public void onReceiveLocation(BDLocation location) {
+                    if (location != null) {
+                        bean.setLatitude(location.getLatitude());
+                        bean.setLongitude(location.getLongitude());
+                        Log.d("ScanActivity", "Baidu location: " + location.getLatitude() + ", " + location.getLongitude());
+                    }
+                }
+            };
+            
+            locationClient.registerLocationListener(locationListener);
+            locationClient.start();
+        } catch (Exception e) {
+            Log.e("ScanActivity", "Baidu location init error: " + e.getMessage());
+        }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (locationClient != null) {
+            locationClient.stop();
+            locationClient.unRegisterLocationListener(locationListener);
+        }
     }
     
     private void startScan() {
@@ -116,11 +171,10 @@ public class ScanActivity extends AppCompatActivity {
         });
     }
     
-    private void saveToDatabase(float price, String productName) {
-        AccountBean bean = new AccountBean();
-        bean.setTypename("其他");
+    private void saveToDatabase(float price, String name) {
+        bean.setTypename("Other");
         bean.setsImageId(R.mipmap.ic_qita_fs);
-        bean.setBeizhu(productName);
+        bean.setBeizhu(name);
         bean.setMoney(price);
         
         Date date = new Date();
@@ -132,7 +186,6 @@ public class ScanActivity extends AppCompatActivity {
         bean.setYear(calendar.get(Calendar.YEAR));
         bean.setMonth(calendar.get(Calendar.MONTH) + 1);
         bean.setDay(calendar.get(Calendar.DAY_OF_MONTH));
-        bean.setKind(0);  // 支出类型
         
         DBManager.insertItemToAccounttb(bean);
         Toast.makeText(this, "记账成功!", Toast.LENGTH_SHORT).show();

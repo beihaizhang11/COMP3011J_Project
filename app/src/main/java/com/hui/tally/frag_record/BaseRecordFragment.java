@@ -29,6 +29,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.content.Context;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.util.Log;
+import android.os.Handler;
+
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+
 /**
  * 记录页面当中的支出模块
  */
@@ -42,6 +56,9 @@ public abstract class BaseRecordFragment extends Fragment implements View.OnClic
     List<TypeBean>typeList;
     TypeBaseAdapter adapter;
     AccountBean accountBean;   //将需要插入到记账本当中的数据保存成对象的形式
+    private LocationClient locationClient;
+    private BDAbstractLocationListener locationListener;
+    private LocationManager locationManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +66,49 @@ public abstract class BaseRecordFragment extends Fragment implements View.OnClic
         accountBean = new AccountBean();   //创建对象
         accountBean.setTypename("其他");
         accountBean.setsImageId(R.mipmap.ic_qita_fs);
+        
+        // 初始化位置管理器
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        
+        try {
+            LocationClient.setAgreePrivacy(true);
+            locationClient = new LocationClient(getActivity().getApplicationContext());
+            LocationClientOption option = new LocationClientOption();
+            option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+            option.setCoorType("bd09ll");
+            option.setScanSpan(1000);
+            option.setOpenGps(true);
+            option.setLocationNotify(true);
+            option.setIgnoreKillProcess(false);
+            option.setIsNeedLocationDescribe(true);
+            option.setIsNeedAddress(true);
+            locationClient.setLocOption(option);
+            
+            locationListener = new BDAbstractLocationListener() {
+                @Override
+                public void onReceiveLocation(BDLocation location) {
+                    if (location != null) {
+                        accountBean.setLatitude(location.getLatitude());
+                        accountBean.setLongitude(location.getLongitude());
+                        Log.d("BaseRecordFragment", "Baidu location: " + location.getLatitude() + ", " + location.getLongitude());
+                    }
+                }
+            };
+            
+            locationClient.registerLocationListener(locationListener);
+            locationClient.start();
+        } catch (Exception e) {
+            Log.e("BaseRecordFragment", "Baidu location init error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (locationClient != null) {
+            locationClient.stop();
+            locationClient.unRegisterLocationListener(locationListener);
+        }
     }
 
     @Override
@@ -122,16 +182,20 @@ public abstract class BaseRecordFragment extends Fragment implements View.OnClic
         boardUtils.setOnEnsureListener(new KeyBoardUtils.OnEnsureListener() {
             @Override
             public void onEnsure() {
-                //获取输入钱数
                 String moneyStr = moneyEt.getText().toString();
-                if (TextUtils.isEmpty(moneyStr)||moneyStr.equals("0")) {
+                if (TextUtils.isEmpty(moneyStr) || moneyStr.equals("0")) {
                     getActivity().finish();
                     return;
                 }
                 float money = Float.parseFloat(moneyStr);
                 accountBean.setMoney(money);
-                //获取记录的信息，保存在数据库当中
-                saveAccountToDB();
+                
+                // 在保存前更新时间和位置信息
+                updateTimeAndLocation();
+                
+                // 保存到数据库
+                DBManager.insertItemToAccounttb(accountBean);
+                
                 // 返回上一级页面
                 getActivity().finish();
             }
@@ -185,4 +249,55 @@ public abstract class BaseRecordFragment extends Fragment implements View.OnClic
             }
         });
     }
+
+    private void updateTimeAndLocation() {
+        // 更新时间信息
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+        String time = sdf.format(date);
+        accountBean.setTime(time);
+        
+        Calendar calendar = Calendar.getInstance();
+        accountBean.setYear(calendar.get(Calendar.YEAR));
+        accountBean.setMonth(calendar.get(Calendar.MONTH) + 1);
+        accountBean.setDay(calendar.get(Calendar.DAY_OF_MONTH));
+        
+        // 只在没有位置信息时尝试获取
+        if (accountBean.getLatitude() == 0 && accountBean.getLongitude() == 0) {
+            updateLocation();
+        }
+    }
+
+    private void updateLocation() {
+        if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                // 先尝试网络定位
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    Location networkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    if (networkLocation != null) {
+                        accountBean.setLatitude(networkLocation.getLatitude());
+                        accountBean.setLongitude(networkLocation.getLongitude());
+                        Log.d("BaseRecordFragment", "Got network location: " + networkLocation.getLatitude() + ", " + networkLocation.getLongitude());
+                        return;
+                    }
+                }
+
+                // 再尝试GPS定位
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    Location gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (gpsLocation != null) {
+                        accountBean.setLatitude(gpsLocation.getLatitude());
+                        accountBean.setLongitude(gpsLocation.getLongitude());
+                        Log.d("BaseRecordFragment", "Got GPS location: " + gpsLocation.getLatitude() + ", " + gpsLocation.getLongitude());
+                        return;
+                    }
+                }
+
+                Log.d("BaseRecordFragment", "No location available from either provider");
+            } catch (SecurityException e) {
+                Log.e("BaseRecordFragment", "Security Exception: " + e.getMessage());
+            }
+        }
+    }
+
 }
