@@ -1,118 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey_f3f3f3">
+    android:background="@drawable/gradient_background">
 
-    <RelativeLayout
-        android:id="@+id/main_top_layout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/main_top_card"
         android:layout_width="match_parent"
-        android:layout_height="70dp">
-        <ImageView
-            android:id="@+id/main_iv_search"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@mipmap/search"
-            android:layout_alignParentRight="true"
-            android:padding="10dp"/>
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="8dp">
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/main_top_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="10dp">
+            android:padding="16dp">
 
-            <Button
-                android:id="@+id/main_btn_budget_analysis"
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/main_recordbtn_bg"
-                android:text="Budget Management"
-                android:textColor="@color/white" />
+            <ImageView
+                android:id="@+id/main_iv_search"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:padding="12dp"
+                android:src="@mipmap/search"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/main_iv_search"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/main_tv_warning"
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_marginBottom="3dp"
-                    android:textColor="#FF0000"
-                    android:textSize="14sp" />
+                    android:layout_height="wrap_content"
+                    android:textColor="#FF4444"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"/>
 
                 <TextView
                     android:id="@+id/main_tv_suggestion"
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
+                    android:layout_height="wrap_content"
                     android:textColor="#FF6B6B"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
 
     <ListView
         android:id="@+id/main_lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/main_top_layout"
-        android:padding="10dp"
+        android:layout_below="@id/main_top_card"
+        android:layout_above="@id/bottom_action_layout"
         android:divider="@null"
-        android:dividerHeight="6dp"
-        android:scrollbars="none"
-        android:background="@color/grey_f3f3f3"/>
+        android:dividerHeight="0dp"
+        android:padding="10dp"/>
 
-    <ImageButton
-        android:id="@+id/main_btn_more"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@mipmap/more"
-        android:layout_alignParentRight="true"
+    <LinearLayout
+        android:id="@+id/bottom_action_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
-        android:background="@drawable/main_morebtn_bg"/>
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center">
 
-    <Button
-        android:id="@+id/main_btn_edit"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@id/main_btn_more"
-        android:background="@drawable/main_recordbtn_bg"
-        android:layout_toLeftOf="@id/main_btn_more"
-        android:text="@string/editone"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:drawableLeft="@mipmap/edit"
-        android:gravity="center_vertical"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/main_btn_ai_assistant"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="AI助手"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="28dp"
+            app:icon="@drawable/ic_ai"
+            app:iconGravity="textStart"/>
 
-    <Button
-        android:id="@+id/main_btn_scan"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@id/main_btn_edit"
-        android:layout_toLeftOf="@id/main_btn_edit"
-        android:background="@drawable/main_recordbtn_bg"
-        android:text="扫码记账"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:drawableLeft="@drawable/ic_scan"
-        android:gravity="center_vertical"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/main_btn_scan"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="扫码记账"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="28dp"
+            app:icon="@drawable/ic_scan"
+            app:iconGravity="textStart"/>
 
-    <Button
-        android:id="@+id/main_btn_heatmap"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@id/main_btn_scan"
-        android:layout_toLeftOf="@id/main_btn_scan"
-        android:background="@drawable/main_recordbtn_bg"
-        android:text="消费热力图"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:gravity="center_vertical"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/main_btn_budget_analysis"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="预算管理"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="28dp"
+            app:icon="@drawable/ic_budget"
+            app:iconGravity="textStart"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/main_btn_heatmap"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="热力图"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="28dp"
+            app:icon="@drawable/ic_heatmap"
+            app:iconGravity="textStart"/>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/main_btn_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="记一笔"
+            app:icon="@mipmap/edit"
+            app:cornerRadius="28dp"/>
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/main_btn_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@id/bottom_action_layout"
+        android:layout_margin="16dp"
+        android:src="@mipmap/more"
+        app:fabSize="normal"
+        app:borderWidth="0dp"/>
 
 </RelativeLayout>

@@ -39,72 +39,82 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    ListView todayLv;  //展示今日收支情况的ListView
-    ImageView searchIv;
-    Button editBtn;
-    ImageButton moreBtn;
-    Button budgetAnalysisBtn;  // 添加成员变量
-    Button scanBtn;  // 添加扫描按钮变量声明
-    Button heatMapBtn;
-    //声明数据源
-    List<AccountBean>mDatas;
-    AccountAdapter adapter;
-    int year,month,day;
-    //头布局相关控件
-    View headerView;
-    TextView topOutTv,topInTv,topbudgetTv,topConTv;
-    ImageView topShowIv;
-    SharedPreferences preferences;
-    TextView warningTv;
-    TextView suggestionTv;
+    private ListView todayLv;  //展示今日收支情况的ListView
+    private ImageView searchIv;
+    private Button editBtn;
+    private ImageButton moreBtn;
+    private Button budgetAnalysisBtn;
+    private Button scanBtn;
+    private Button heatMapBtn;
+    private Button aiAssistantBtn;
+    private List<AccountBean> mDatas;
+    private AccountAdapter adapter;
+    private int year,month,day;
+    private View headerView;
+    private TextView topOutTv,topInTv,topbudgetTv,topConTv;
+    private ImageView topShowIv;
+    private SharedPreferences preferences;
+    private TextView warningTv;
+    private TextView suggestionTv;
+    private boolean isShow = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        // 检查并请求位置权限
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
-        }
-        
+        checkLocationPermission();
         initTime();
         initView();
         preferences = getSharedPreferences("budget", Context.MODE_PRIVATE);
-        //添加ListView的头布局
         addLVHeaderView();
+        initData();
+    }
+
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+    }
+
+    private void initData() {
         mDatas = new ArrayList<>();
-        //设置适配器：加载每一行数据到列表当中
         adapter = new AccountAdapter(this, mDatas);
         todayLv.setAdapter(adapter);
-
-        scanBtn = findViewById(R.id.main_btn_scan);
-        scanBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ScanActivity.class);
-                startActivity(intent) ;
-            }
-        });
+        setLVLongClickListener();
     }
-     /** 初始化自带的View的方法*/
+
     private void initView() {
         todayLv = findViewById(R.id.main_lv);
         editBtn = findViewById(R.id.main_btn_edit);
         moreBtn = findViewById(R.id.main_btn_more);
         searchIv = findViewById(R.id.main_iv_search);
-        budgetAnalysisBtn = findViewById(R.id.main_btn_budget_analysis);  // 初始化按钮
+        budgetAnalysisBtn = findViewById(R.id.main_btn_budget_analysis);
+        scanBtn = findViewById(R.id.main_btn_scan);
         warningTv = findViewById(R.id.main_tv_warning);
         suggestionTv = findViewById(R.id.main_tv_suggestion);
         heatMapBtn = findViewById(R.id.main_btn_heatmap);
-        checkBudgetWarning();
-        checkSpendingSuggestion();
+        aiAssistantBtn = findViewById(R.id.main_btn_ai_assistant);
+        
+        initClickListeners();
+    }
+
+    private void initClickListeners() {
         editBtn.setOnClickListener(this);
         moreBtn.setOnClickListener(this);
         searchIv.setOnClickListener(this);
-        budgetAnalysisBtn.setOnClickListener(this);  // 添加点击监听
+        budgetAnalysisBtn.setOnClickListener(this);
+        
+        scanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ScanActivity.class);
+                startActivity(intent);
+            }
+        });
+        
         heatMapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,8 +122,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
             }
         });
-        setLVLongClickListener();
+        
+        aiAssistantBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AIAssistantActivity.class);
+                startActivity(intent);
+            }
+        });
     }
+
     /** 设置ListView的长按事件*/
     private void setLVLongClickListener() {
         todayLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -286,7 +304,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    boolean isShow = true;
     /**
      * 点击头布局眼睛时，如果原来是明文，就加密，如果是密文，就显示出来
      * */
