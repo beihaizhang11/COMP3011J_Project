@@ -12,7 +12,7 @@
         android:id="@+id/item_recordfrag_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="其他"
+        android:text="Other"
         android:layout_marginTop="5dp"
         android:textSize="12sp"
         android:textColor="@color/grey_7D7D7D"

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class RecordPagerAdapter extends FragmentPagerAdapter {
     List<Fragment>fragmentList;
-    String[]titles = {"支出","收入"};
+    String[]titles = {"Pay","Earn"};
     public RecordPagerAdapter(@NonNull FragmentManager fm,List<Fragment>fragmentList) {
         super(fm);
         this.fragmentList = fragmentList;

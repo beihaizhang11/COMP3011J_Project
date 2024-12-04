@@ -23,7 +23,7 @@
             android:id="@+id/item_budget_tv_typename"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="其他"
+            android:text="Other"
             android:textStyle="bold"
             android:textSize="16sp"/>
 

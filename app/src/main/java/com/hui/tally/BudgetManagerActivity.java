@@ -100,10 +100,10 @@ public class BudgetManagerActivity extends AppCompatActivity {
     private void showDeleteDialog(final int position) {
         final BudgetBean budgetBean = mDatas.get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("提示")
-                .setMessage("确定删除该预算吗？")
-                .setNegativeButton("取消", null)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        builder.setTitle("WARNING")
+                .setMessage("Do you sure to delete budget？")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Approve", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DBManager.deleteBudget(budgetBean.getTypename(), year, month);

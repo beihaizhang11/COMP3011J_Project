@@ -18,7 +18,7 @@ public class OutcomeFragment extends BaseRecordFragment {
         List<TypeBean> outlist = DBManager.getTypeList(0);
         typeList.addAll(outlist);
         adapter.notifyDataSetChanged();
-        typeTv.setText("其他");
+        typeTv.setText("Other");
         typeIv.setImageResource(R.mipmap.ic_qita_fs);
     }
 

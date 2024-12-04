@@ -16,7 +16,7 @@ public class IncomeFragment extends BaseRecordFragment {
         List<TypeBean> inlist = DBManager.getTypeList(1);
         typeList.addAll(inlist);
         adapter.notifyDataSetChanged();
-        typeTv.setText("其他");
+        typeTv.setText("Other");
         typeIv.setImageResource(R.mipmap.in_qt_fs);
     }
 

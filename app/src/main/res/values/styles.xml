@@ -10,10 +10,13 @@
 
     <style name="dialogmoreStyle">
         <item name="android:background">@color/white</item>
-        <item name="android:padding">20dp</item>
+        <item name="android:padding">10dp</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:minHeight">100dp</item>
     </style>
 </resources>

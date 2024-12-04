@@ -21,7 +21,7 @@
             android:id="@+id/budget_manager_tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2020年11月预算"
+            android:text="Budget This Month"
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textStyle="bold"/>
@@ -29,8 +29,8 @@
         <Button
             android:id="@+id/budget_manager_btn_add"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:text="添加"
+            android:layout_height="38dp"
+            android:text="ADD"
             android:textColor="@color/white"
             android:background="@drawable/main_recordbtn_bg"
             android:layout_alignParentRight="true"
@@ -44,4 +44,4 @@
         android:layout_height="match_parent"
         android:divider="@null"
         android:padding="10dp"/>
-</LinearLayout> 
+</LinearLayout>
