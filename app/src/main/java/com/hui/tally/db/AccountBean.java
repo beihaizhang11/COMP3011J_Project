@@ -13,6 +13,7 @@ public class AccountBean {
     int kind;   //类型  收入---1   支出---0
     double latitude;   // 纬度
     double longitude;  // 经度
+    private transient String currency = "CNY";  // 临时字段，不存入数据库
 
     public int getId() {
         return id;
@@ -118,6 +119,14 @@ public class AccountBean {
         this.longitude = longitude;
     }
 
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     public AccountBean() {
     }
 
@@ -132,5 +141,6 @@ public class AccountBean {
         this.month = month;
         this.day = day;
         this.kind = kind;
+        this.currency = "CNY";
     }
 }

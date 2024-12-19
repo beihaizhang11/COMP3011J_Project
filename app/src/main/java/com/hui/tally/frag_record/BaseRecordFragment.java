@@ -14,6 +14,9 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.hui.tally.R;
 import com.hui.tally.db.AccountBean;
@@ -22,6 +25,7 @@ import com.hui.tally.db.TypeBean;
 import com.hui.tally.utils.BeiZhuDialog;
 import com.hui.tally.utils.KeyBoardUtils;
 import com.hui.tally.utils.SelectTimeDialog;
+import com.hui.tally.utils.CurrencyConverter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,7 +59,7 @@ public abstract class BaseRecordFragment extends Fragment implements View.OnClic
     GridView typeGv;
     List<TypeBean>typeList;
     TypeBaseAdapter adapter;
-    AccountBean accountBean;   //将需要插入到记账本当中的数据保存成对象的形式
+    AccountBean accountBean;   //��需要插入到记账本当中的数据保存成对象的形式
     private LocationClient locationClient;
     private BDAbstractLocationListener locationListener;
     private LocationManager locationManager;
@@ -175,6 +179,7 @@ public abstract class BaseRecordFragment extends Fragment implements View.OnClic
         timeTv = view.findViewById(R.id.frag_record_tv_time);
         beizhuTv.setOnClickListener(this);
         timeTv.setOnClickListener(this);
+
         //让自定义软键盘显示出来
         KeyBoardUtils boardUtils = new KeyBoardUtils(keyboardView, moneyEt);
         boardUtils.showKeyboard();
@@ -187,19 +192,68 @@ public abstract class BaseRecordFragment extends Fragment implements View.OnClic
                     getActivity().finish();
                     return;
                 }
-                float money = Float.parseFloat(moneyStr);
-                accountBean.setMoney(money);
+                final float inputMoney = Float.parseFloat(moneyStr);
                 
-                // 在保存前更新时间和位置信息
-                updateTimeAndLocation();
-                
-                // 保存到数据库
-                DBManager.insertItemToAccounttb(accountBean);
-                
-                // 返回上一级页面
-                getActivity().finish();
+                // 在后台线程中执行货币转换
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            final float convertedMoney;
+                            // 如果不是人民币，进行转换
+                            if (!accountBean.getCurrency().equals("CNY")) {
+                                convertedMoney = CurrencyConverter.convertToCNY(inputMoney, accountBean.getCurrency());
+                            } else {
+                                convertedMoney = inputMoney;
+                            }
+                            
+                            // 在UI线程中更新UI并保存数据
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    accountBean.setMoney(convertedMoney);
+                                    // 在保存前更新时间和位置信息
+                                    updateTimeAndLocation();
+                                    // 保存到数据库
+                                    saveAccountToDB();
+                                    // 返回上一级页面
+                                    getActivity().finish();
+                                }
+                            });
+                        } catch (Exception e) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getContext(), "货币转换失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                }).start();
             }
         });
+        
+        // 添加货币选择器
+        Spinner currencySpinner = view.findViewById(R.id.currency_spinner);
+        if (currencySpinner != null) {
+            ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_spinner_item,
+                    CurrencyConverter.getAvailableCurrencies());
+            currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            currencySpinner.setAdapter(currencyAdapter);
+            currencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String selectedCurrency = (String) parent.getItemAtPosition(position);
+                    accountBean.setCurrency(selectedCurrency);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    accountBean.setCurrency("CNY");
+                }
+            });
+        }
     }
     /* 让子类一定要重写这个方法*/
     public abstract void saveAccountToDB();

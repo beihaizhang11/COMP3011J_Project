@@ -26,14 +26,13 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginLeft="10dp"/>
-        <EditText
-            android:id="@+id/frag_record_et_money"
+        <Spinner
+            android:id="@+id/currency_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:inputType="number"
-            android:background="@color/white"/>
+            android:layout_marginRight="10dp"/>
     </RelativeLayout>
     <View
         android:id="@+id/frag_record_line1"
@@ -41,11 +40,22 @@
         android:layout_height="1dp"
         android:layout_below="@id/frag_record_rl_top"
         android:background="@color/grey_f3f3f3"/>
+    <EditText
+        android:id="@+id/frag_record_et_money"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/frag_record_line1"
+        android:background="@color/white"
+        android:hint="0.00"
+        android:inputType="none"
+        android:padding="10dp"
+        android:textAlignment="center"
+        android:textSize="24sp"/>
     <GridView
         android:id="@+id/frag_record_gv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/frag_record_line1"
+        android:layout_below="@id/frag_record_et_money"
         android:background="@color/white"
         android:numColumns="5"
         android:paddingTop="5dp"

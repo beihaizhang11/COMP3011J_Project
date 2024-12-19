@@ -1,16 +1,26 @@
 package com.hui.tally;
 
-import android.app.Application;
+import android.content.Context;
+import androidx.multidex.MultiDexApplication;
 import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.location.LocationClient;
 import com.hui.tally.db.DBManager;
 
 /* 表示全局应用的类*/
-public class UniteApp extends Application {
+public class UniteApp extends MultiDexApplication {
+    private static Context context;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        androidx.multidex.MultiDex.install(this);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        context = getApplicationContext();
         // 初始化数据库
         DBManager.initDB(getApplicationContext());
         
@@ -28,5 +38,9 @@ public class UniteApp extends Application {
         // 自4.3.0起，百度地图SDK所有接口均支持百度坐标和国测局坐标，用此方法设置您使用的坐标类型.
         // 包括BD09LL和GCJ02两种坐标，默认是BD09LL坐标。
         SDKInitializer.setCoordType(CoordType.BD09LL);
+    }
+
+    public static Context getContext() {
+        return context;
     }
 }
