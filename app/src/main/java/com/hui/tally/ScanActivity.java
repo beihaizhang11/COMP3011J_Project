@@ -28,8 +28,8 @@ import android.util.Log;
 
 public class ScanActivity extends AppCompatActivity {
     private static final String BASE_URL = "https://www.mxnzp.com/api/barcode/goods/details";
-    private static final String APP_ID = "nrmef1l2tlflbknw";  // 替换成你申请的APP_ID
-    private static final String APP_SECRET = "meIQIXYnGX7KaY49YE1cFjmsqqBaYhOi"; // 替换成你申请的APP_SECRET
+    private static final String APP_ID = "nrmef1l2tlflbknw";  // 申请的APP_ID
+    private static final String APP_SECRET = "meIQIXYnGX7KaY49YE1cFjmsqqBaYhOi"; // 申请的APP_SECRET
     private OkHttpClient client;
     private LocationClient locationClient;
     private BDAbstractLocationListener locationListener;
